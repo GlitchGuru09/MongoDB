@@ -1,0 +1,9 @@
+<-- mongoDB-->
+
+Database -> Collection(eg. tables) -> Document(a perticular users data)
+
+CODE                                   DATABASE 
+-------------------------------------------------
+mongoose.connect       -->             database create
+model create           -->             Collection
+CREATE code            -->             Document
