@@ -1,48 +1,43 @@
 const express = require('express');
 const app = express();
-const userModel = require('./usermodel');
+const path = require('path');
+const userModel = require('./models/user')
 
 const port = 3000;
 
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
+app.use(express.static(path.join(__dirname,'public')));
+app.set("view engine",'ejs');
 
 app.get('/', function(req, res){
-    res.send("hey");
+    res.render('index')
 })
 
-//crud
-//create
-app.get('/create', async function(req, res){
-    let createdUser =  await userModel.create({
-        name: "shrey",
-        username: "shrey09",
-        email: "shreyvernekar09@gmail.com"
-    })
+//create user
+app.post('/create', async function(req, res){
+    let {name, email, image} = req.body;
 
-    res.send(createdUser)
+    let createdUser = await userModel.create({
+        name,
+        email,
+        image
+    });
+
+     res.redirect('/read');
 })
 
-//read
+//read user
 app.get('/read', async function(req, res){
-    let users = await userModel.find() //find({name: "shrey vernekar"}) //find() to get all users
-    res.send(users)
+    let users = await  userModel.find()
+    res.render('read', {users})
 })
 
-//update
-app.get('/update', async function(req, res){
-    let updatedUser = await  userModel.findOneAndUpdate({username: "shrey09"}, {name: "shrey vernekar"}, {new: true})
-    //findOneUpdate(findOne, newValue, {new:true})
-    res.send(updatedUser)
+app.get('/delete/:id', async function(req, res){
+    let users = await  userModel.findOneAndDelete({_id: req.params.id})
+    res.redirect("/read")
 })
-
-
-//delete
-app.get('/delete', async function(req, res){
-    let deleteUser = await userModel.findOneAndDelete({name: "shrey"}) 
-    res.send(deleteUser)
-})
-
 
 app.listen(port, function(err){
-    console.log(`server running on port ${port}`);
+    console.log(`Server is running on port: ${port}`);
 })
-
